@@ -187,6 +187,7 @@ Usage of oauth2_proxy:
   -login-url="": Authentication endpoint
   -pass-access-token=false: pass OAuth access_token to upstream via X-Forwarded-Access-Token header
   -pass-basic-auth=true: pass HTTP Basic Auth, X-Forwarded-User and X-Forwarded-Email information to upstream
+  -pass-user-headers=true: pass X-Forwarded-User and X-Forwarded-Email information to upstream
   -pass-host-header=true: pass the request Host Header to upstream
   -profile-url="": Profile access endpoint
   -provider="google": OAuth provider
@@ -198,7 +199,9 @@ Usage of oauth2_proxy:
   -scope="": Oauth scope specification
   -signature-key="": GAP-Signature request signature key (algorithm:secretkey)
   -skip-auth-regex=: bypass authentication for requests path's that match (may be given multiple times)
+  -skip-auth-preflight=false: bypass authentication for OPTIONAL requests so preflight requests could succeed when using CORS
   -skip-provider-button=false: will skip sign-in-page to directly reach the next step: oauth/start
+  -ssl-insecure-skip-verify: skip validation of certificates presented when using HTTPS
   -tls-cert="": path to certificate file
   -tls-key="": path to private key file
   -upstream=: the http url(s) of the upstream endpoint or file:// paths for static files. Routing is based on the path
@@ -357,10 +360,25 @@ server {
   }
 
   location /oauth2/ {
-    proxy_pass http://127.0.0.1:4180;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Scheme $scheme;
+    proxy_pass       http://127.0.0.1:4180;
+    proxy_set_header Host                    $host;
+    proxy_set_header X-Real-IP               $remote_addr;
+    proxy_set_header X-Scheme                $scheme;
+    proxy_set_header X-Auth-Request-Redirect $request_uri;
+  }
+
+  location /upstream/ {
+    auth_request /oauth2/auth;
+    error_page 401 = /oauth2/sign_in;
+
+    # pass information via X-User and X-Email headers to backend,
+    # requires running with --set-xauthrequest flag
+    auth_request_set $user   $upstream_http_x_auth_request_user;
+    auth_request_set $email  $upstream_http_x_auth_request_email;
+    proxy_set_header X-User  $user;
+    proxy_set_header X-Email $email;
+
+    proxy_pass http://backend/;
   }
 
   location / {
