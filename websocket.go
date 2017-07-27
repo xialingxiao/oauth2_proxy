@@ -13,18 +13,20 @@ import (
 )
 
 var (
-	ConnectionHeaderKey = http.CanonicalHeaderKey("connection")
-	SetCookieHeaderKey  = http.CanonicalHeaderKey("set-cookie")
-	UpgradeHeaderKey    = http.CanonicalHeaderKey("upgrade")
-	WSKeyHeaderKey      = http.CanonicalHeaderKey("sec-websocket-key")
-	WSProtocolHeaderKey = http.CanonicalHeaderKey("sec-websocket-protocol")
-	WSVersionHeaderKey  = http.CanonicalHeaderKey("sec-websocket-version")
+	ConnectionHeaderKey   = http.CanonicalHeaderKey("connection")
+	SetCookieHeaderKey    = http.CanonicalHeaderKey("set-cookie")
+	UpgradeHeaderKey      = http.CanonicalHeaderKey("upgrade")
+	WSKeyHeaderKey        = http.CanonicalHeaderKey("sec-websocket-key")
+	WSProtocolHeaderKey   = http.CanonicalHeaderKey("sec-websocket-protocol")
+	WSVersionHeaderKey    = http.CanonicalHeaderKey("sec-websocket-version")
+	WSExtensionsHeaderKey = http.CanonicalHeaderKey("sec-websocket-extensions")
 
 	ConnectionHeaderValue = "Upgrade"
 	UpgradeHeaderValue    = "websocket"
 
-	HandshakeHeaders = []string{ConnectionHeaderKey, UpgradeHeaderKey, WSVersionHeaderKey, WSKeyHeaderKey}
-	UpgradeHeaders   = []string{SetCookieHeaderKey, WSProtocolHeaderKey}
+	HandshakeHeaders = []string{ConnectionHeaderKey, UpgradeHeaderKey, WSVersionHeaderKey,
+		WSKeyHeaderKey, WSExtensionsHeaderKey}
+	UpgradeHeaders = []string{SetCookieHeaderKey, WSProtocolHeaderKey}
 )
 
 func (u *UpstreamProxy) handleWebsocket(w http.ResponseWriter, r *http.Request) {
