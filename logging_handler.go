@@ -4,12 +4,12 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net"
 	"net/http"
 	"net/url"
 	"time"
+	"encoding/json"
 )
 
 // responseLogger is wrapper of http.ResponseWriter that keeps track of its HTTP status
@@ -87,6 +87,22 @@ func (h loggingHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.writer.Write(logLine)
 }
 
+// logging format
+type logFmt struct {
+	client string
+	username string
+	time string
+	host string
+	method string
+	upstream string
+	uri string
+	proto string
+	agent string
+	status int
+	size int
+	duration float64
+}
+
 // Log entry for req similar to Apache Common Log Format.
 // ts is the timestamp with which the entry should be logged.
 // status, size are used to provide the response HTTP status and size.
@@ -114,19 +130,8 @@ func buildLogLine(username, upstream string, req *http.Request, url url.URL, ts 
 
 	duration := float64(time.Now().Sub(ts)) / float64(time.Second)
 
-	logLine := fmt.Sprintf("%s - %s [%s] %s %s %s %q %s %q %d %d %0.3f\n",
-		client,
-		username,
-		ts.Format("02/Jan/2006:15:04:05 -0700"),
-		req.Host,
-		req.Method,
-		upstream,
-		url.RequestURI(),
-		req.Proto,
-		req.UserAgent(),
-		status,
-		size,
-		duration,
-	)
+	logItem := logFmt{client, username, ts.Format("2016-02-17T15:04:05.000+08:00"), req.Host, req.Method, upstream, url.RequestURI(), req.Proto, req.UserAgent(), status, size, duration}
+	logItemFinal, _ := json.Marshal(logItem)
+	logLine := string(logItemFinal) + "\n"
 	return []byte(logLine)
 }
