@@ -89,18 +89,18 @@ func (h loggingHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // logging format
 type logFmt struct {
-	client string
-	username string
-	time string
-	host string
-	method string
-	upstream string
-	uri string
-	proto string
-	agent string
-	status int
-	size int
-	duration float64
+	Client string `json:"client"`
+	Username string `json:"username"`
+	Time string `json:"time"`
+	Host string `json:"host"`
+	Method string `json:"method"`
+	Upstream string `json:"upstream"`
+	URI string `json:"request_uri"`
+	Proto string `json:"protocol"`
+	Agent string `json:"user_agent"`
+	Status int `json:"status"`
+	Size int `json:"size"`
+	Duration float64 `json:"duration"`
 }
 
 // Log entry for req similar to Apache Common Log Format.
