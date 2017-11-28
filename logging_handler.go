@@ -130,7 +130,7 @@ func buildLogLine(username, upstream string, req *http.Request, url url.URL, ts 
 
 	duration := float64(time.Now().Sub(ts)) / float64(time.Second)
 
-	logItem := logFmt{client, username, ts.Format("2016-02-17T15:04:05.000+08:00"), req.Host, req.Method, upstream, url.RequestURI(), req.Proto, req.UserAgent(), status, size, duration}
+	logItem := logFmt{client, username, ts.Format("2006-01-02T15:04:05.000000-07:00"), req.Host, req.Method, upstream, url.RequestURI(), req.Proto, req.UserAgent(), status, size, duration}
 	logItemFinal, _ := json.Marshal(logItem)
 	logLine := string(logItemFinal) + "\n"
 	return []byte(logLine)
