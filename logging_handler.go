@@ -91,7 +91,7 @@ func (h loggingHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // logging format
 type logFmt struct {
-	Client string `json:"client"`
+	Client string `json:"ip"`
 	Username string `json:"username"`
 	Time string `json:"time"`
 	Host string `json:"host"`
